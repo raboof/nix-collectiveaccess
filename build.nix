@@ -37,12 +37,12 @@ define("__CA_STACKTRACE_ON_EXCEPTION__", true);
 require(__DIR__."/app/helpers/post-setup.php");
 ?>
   '';
-  nginxRoot = symlinkJoin {
-    name = "webroot";
-    paths = [ providence ];
+  nginxRoot = runCommand "webroot" {} ''
     # TODO could add a favicon
-    postBuild = "cp ${providenceConfig} $out/setup.php";
-  };
+    mkdir -p $out
+    cp -ra ${providence}/* $out
+    cp ${providenceConfig} $out/setup.php
+  '';
   nginxPort = "8080";
   nginxConf = writeText "nginx.conf" ''
     user root nobody;
