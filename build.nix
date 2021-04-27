@@ -48,6 +48,7 @@ require(__DIR__."/app/helpers/post-setup.php");
     events {}
     http {
       access_log /dev/stdout;
+      include ${nginx}/conf/mime.types;
       server {
         listen ${nginxPort};
         index index.php;
