@@ -55,9 +55,10 @@ require(__DIR__."/app/helpers/post-setup.php");
           root /webroot;
         }
         location ~ \.php {
-          include ${nginx}/conf/fastcgi_params;
           fastcgi_pass unix:${phpFpmSocketLocation};
           fastcgi_param SCRIPT_FILENAME /webroot$fastcgi_script_name;
+          fastcgi_split_path_info ^(.+\.php)(/.+)$;
+          include ${nginx}/conf/fastcgi_params;
         }
       }
     }
