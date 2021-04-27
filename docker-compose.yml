@@ -1,0 +1,19 @@
+version: "3.9"
+services:
+  database:
+    image: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=AhzeiP5s
+    # Needed for initial setup
+    ports:
+      - "3306:3306"
+  providence:
+    image: providence:latest
+    links:
+      - database
+    environment:
+      - CA_DB_HOST=database
+      - CA_DB_USER=root
+      - CA_DB_PASSWORD=AhzeiP5s
+    ports:
+      - "8080:8080"

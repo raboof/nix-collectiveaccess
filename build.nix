@@ -12,8 +12,8 @@ let
   };
   providenceConfig = writeText "setup.php" ''
 <?php
-	define("__CA_DB_HOST__", 'database');
-	define("__CA_DB_USER__", 'ca');
+	define("__CA_DB_HOST__", getenv("CA_DB_HOST"));
+	define("__CA_DB_USER__", getenv("CA_DB_USER"));
 	define("__CA_DB_PASSWORD__", 'AhzeiP5s');
 	define("__CA_DB_DATABASE__", 'ca');
 	define("__CA_APP_DISPLAY_NAME__", "EICAS");
@@ -23,12 +23,18 @@ date_default_timezone_set('Europe/Amsterdam');
 define("__CA_USE_CLEAN_URLS__", 0);
 	define("__CA_APP_NAME__", "collectiveaccess");
 
+# this is not correctly autodetected
+# https://github.com/raboof/nix-collectiveaccess/issues/5
+define("__CA_URL_ROOT__", "");
+
 # providence currently logs to app/log on disk rather than
 # to stdout/stderr where the container infrastructure can pick it up.
 # Until that time let's just send the errors to the user.
 # https://github.com/collectiveaccess/providence/issues/923
 define("__CA_ENABLE_DEBUG_OUTPUT__", true);
 define("__CA_STACKTRACE_ON_EXCEPTION__", true);
+
+require(__DIR__."/app/helpers/post-setup.php");
 ?>
   '';
   nginxRoot = symlinkJoin {
@@ -72,6 +78,10 @@ define("__CA_STACKTRACE_ON_EXCEPTION__", true);
     pm = static
     pm.max_children = 5
 
+    ; to read e.g. the database config passed in via the env.
+    ; there is nothing (more) sensitive in there anyway:
+    clear_env=no
+
     access.log=/proc/self/fd/2
     catch_workers_output = yes
     php_flag[display_errors] = on
@@ -87,6 +97,7 @@ define("__CA_STACKTRACE_ON_EXCEPTION__", true);
   '';
   providence-image = dockerTools.buildLayeredImage {
     name = "providence";
+    tag = "latest";
     contents = [
       dockerTools.fakeNss
     ];
