@@ -22,6 +22,13 @@ date_default_timezone_set('Europe/Amsterdam');
 	define("__CA_DEFAULT_LOCALE__", "en_US");
 define("__CA_USE_CLEAN_URLS__", 0);
 	define("__CA_APP_NAME__", "collectiveaccess");
+
+# providence currently logs to app/log on disk rather than
+# to stdout/stderr where the container infrastructure can pick it up.
+# Until that time let's just send the errors to the user.
+# https://github.com/collectiveaccess/providence/issues/923
+define("__CA_ENABLE_DEBUG_OUTPUT__", true);
+define("__CA_STACKTRACE_ON_EXCEPTION__", true);
 ?>
   '';
   nginxRoot = symlinkJoin {
@@ -48,7 +55,7 @@ define("__CA_USE_CLEAN_URLS__", 0);
         location ~ \.php$ {
           include ${nginx}/conf/fastcgi_params;
           fastcgi_pass unix:${phpFpmSocketLocation};
-          fastcgi_param SCRIPT_FILENAME ${nginxRoot}$fastcgi_script_name;
+          fastcgi_param SCRIPT_FILENAME ${nginxRoot}/$fastcgi_script_name;
         }
       }
     }
@@ -66,19 +73,16 @@ define("__CA_USE_CLEAN_URLS__", 0);
     pm.max_children = 5
 
     access.log=/proc/self/fd/2
-    ;catch_workers_output = yes
-    ;php_flag[display_errors] = on
-    ;php_admin_value[error_log] = /dev/stdout
-    ;php_admin_flag[log_errors] = on
+    catch_workers_output = yes
+    php_flag[display_errors] = on
+    php_admin_value[error_log] = /proc/self/fd/2
+    php_admin_flag[log_errors] = on
   '';
   phpIni = writeText "php.ini" ''
   '';
   startScript = writeScript "start.sh" ''
     #!${bash}/bin/sh
-    ${coreutils}/bin/chown nobody:nobody ${phpFpmSocketLocation}
-    ${coreutils}/bin/ls -alFh ${phpFpmSocketLocation}
     ${php}/bin/php-fpm -y ${phpFpmCfg} -c ${phpIni}
-    ${coreutils}/bin/ls -alFh ${phpFpmSocketLocation}
     exec "${nginx}/bin/nginx" "-c" ${nginxConf}
   '';
   providence-image = dockerTools.buildLayeredImage {
