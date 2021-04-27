@@ -17,3 +17,5 @@ services:
       - CA_DB_PASSWORD=AhzeiP5s
     ports:
       - "8080:8080"
+    volumes:
+      - /tmp/media:/webroot/media

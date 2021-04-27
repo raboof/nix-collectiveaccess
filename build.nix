@@ -26,6 +26,7 @@ define("__CA_USE_CLEAN_URLS__", 0);
 # this is not correctly autodetected
 # https://github.com/raboof/nix-collectiveaccess/issues/5
 define("__CA_URL_ROOT__", "");
+define("__CA_BASE_DIR__", "/webroot");
 
 # providence currently logs to app/log on disk rather than
 # to stdout/stderr where the container infrastructure can pick it up.
@@ -34,14 +35,9 @@ define("__CA_URL_ROOT__", "");
 define("__CA_ENABLE_DEBUG_OUTPUT__", true);
 define("__CA_STACKTRACE_ON_EXCEPTION__", true);
 
+
 require(__DIR__."/app/helpers/post-setup.php");
 ?>
-  '';
-  nginxRoot = runCommand "webroot" {} ''
-    # TODO could add a favicon
-    mkdir -p $out
-    cp -ra ${providence}/* $out
-    cp ${providenceConfig} $out/setup.php
   '';
   nginxPort = "8080";
   nginxConf = writeText "nginx.conf" ''
@@ -56,12 +52,12 @@ require(__DIR__."/app/helpers/post-setup.php");
         listen ${nginxPort};
         index index.php;
         location / {
-          root ${nginxRoot};
+          root /webroot;
         }
-        location ~ \.php$ {
+        location ~ \.php {
           include ${nginx}/conf/fastcgi_params;
           fastcgi_pass unix:${phpFpmSocketLocation};
-          fastcgi_param SCRIPT_FILENAME ${nginxRoot}/$fastcgi_script_name;
+          fastcgi_param SCRIPT_FILENAME /webroot$fastcgi_script_name;
         }
       }
     }
@@ -108,7 +104,23 @@ require(__DIR__."/app/helpers/post-setup.php");
       mkdir -p var/cache/nginx
       mkdir -p run
       touch run/php-fpm.sock
+      # I think php-fpm wants to write a lock file there?
+      # perhaps we can tell it not to?
       mkdir -p tmp
+
+      # the 'installer' wants to write to the app, so copy
+      # it for now.
+      mkdir webroot
+      cp -ra ${providence}/* webroot
+      cp ${providenceConfig} webroot/setup.php
+      # https://github.com/raboof/nix-collectiveaccess/issues/6
+      chmod a+wx webroot/app/log
+      # https://github.com/raboof/nix-collectiveaccess/issues/7
+      chmod a+wx webroot/app/tmp
+      # https://github.com/raboof/nix-collectiveaccess/issues/8
+      chmod a+wx webroot/media
+
+      chmod a+w webroot/vendor/ezyang/htmlpurifier/library/HTMLPurifier/DefinitionCache/Serializer
     '';
     config = {
       Cmd = [ "${startScript}" ];
