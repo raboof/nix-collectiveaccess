@@ -106,9 +106,12 @@ require(__DIR__."/app/helpers/post-setup.php");
       mkdir -p var/cache/nginx
       mkdir -p run
       touch run/php-fpm.sock
-      # I think php-fpm wants to write a lock file there?
-      # perhaps we can tell it not to?
+
+      # php-fpm lock file,
+      # media file upload PHP temporary directory
+      # conversions temporary directory
       mkdir -p tmp
+      chmod a+rwx tmp
 
       # the 'installer' wants to write to the app, so copy
       # it for now.
