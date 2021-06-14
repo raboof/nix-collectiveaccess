@@ -94,7 +94,7 @@ require(__DIR__."/app/helpers/post-setup.php");
     exec "${nginx}/bin/nginx" "-c" ${nginxConf}
   '';
   providence-image = dockerTools.buildLayeredImage {
-    name = "providence";
+    name = "raboof/providence";
     tag = "latest";
     contents = [
       dockerTools.fakeNss
