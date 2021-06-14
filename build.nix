@@ -14,10 +14,10 @@ let
 <?php
 	define("__CA_DB_HOST__", getenv("CA_DB_HOST"));
 	define("__CA_DB_USER__", getenv("CA_DB_USER"));
-	define("__CA_DB_PASSWORD__", 'AhzeiP5s');
-	define("__CA_DB_DATABASE__", 'ca');
-	define("__CA_APP_DISPLAY_NAME__", "EICAS");
-	define("__CA_ADMIN_EMAIL__", 'arnout@bzzt.net');
+	define("__CA_DB_PASSWORD__", getenv("CA_DB_PASSWORD"));
+	define("__CA_DB_DATABASE__", getenv("CA_DB_DATABASE"));
+	define("__CA_APP_DISPLAY_NAME__", getenv("CA_APP_DISPLAY_NAME"));
+	define("__CA_ADMIN_EMAIL__", getenv("CA_ADMIN_EMAIL"));
 date_default_timezone_set('Europe/Amsterdam');
 	define("__CA_DEFAULT_LOCALE__", "en_US");
 define("__CA_USE_CLEAN_URLS__", 0);

@@ -1,9 +1,12 @@
 version: "3.9"
 services:
   database:
-    image: mysql
+    image: mysql:8.0.25
     environment:
       - MYSQL_ROOT_PASSWORD=AhzeiP5s
+      - MYSQL_DATABASE=ca
+      - MYSQL_USER=ca
+      - MYSQL_PASSWORD=xie7Hiuf
     # Needed for initial setup
     ports:
       - "3306:3306"
@@ -13,8 +16,11 @@ services:
       - database
     environment:
       - CA_DB_HOST=database
-      - CA_DB_USER=root
-      - CA_DB_PASSWORD=AhzeiP5s
+      - CA_DB_USER=ca
+      - CA_DB_PASSWORD=xie7Hiuf
+      - CA_DB_DATABASE=ca
+      - CA_APP_DISPLAY_NAME=EICAS
+      - CA_ADMIN_EMAIL=arnout@bzzt.net
     ports:
       - "8080:8080"
     volumes:
