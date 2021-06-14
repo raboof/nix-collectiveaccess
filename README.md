@@ -20,12 +20,12 @@ $ docker pull docker.io/raboof/providence
 Then create and populate the media directory:
 
 ```
-$ mkdir -p /tmp/media/collectiveaccess/images
-$ mkdir /tmp/media/collectiveaccess/tilepics
-$ chmod a+rwx /tmp/media
-$ chmod a+rwx /tmp/media/collectiveaccess
-$ chmod a+rwx /tmp/media/collectiveaccess/images
-$ chmod a+rwx /tmp/media/collectiveaccess/tilepics
+$ mkdir -p media/collectiveaccess/images
+$ mkdir media/collectiveaccess/tilepics
+$ chmod a+rwx media
+$ chmod a+rwx media/collectiveaccess
+$ chmod a+rwx media/collectiveaccess/images
+$ chmod a+rwx media/collectiveaccess/tilepics
 ```
 
 and start the images:
