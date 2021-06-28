@@ -12,6 +12,7 @@ let
   };
   providenceConfig = writeText "setup.php" ''
 <?php
+	define("__CA_SITE_HOSTNAME__", getenv("CA_SITE_HOSTNAME"));
 	define("__CA_DB_HOST__", getenv("CA_DB_HOST"));
 	define("__CA_DB_USER__", getenv("CA_DB_USER"));
 	define("__CA_DB_PASSWORD__", getenv("CA_DB_PASSWORD"));
