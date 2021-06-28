@@ -90,7 +90,7 @@ require(__DIR__."/app/helpers/post-setup.php");
   '';
   startScript = writeScript "start.sh" ''
     #!${bash}/bin/sh
-    ${php}/bin/php-fpm -y ${phpFpmCfg} -c ${phpIni}
+    ${php74}/bin/php-fpm -y ${phpFpmCfg} -c ${phpIni}
     exec "${nginx}/bin/nginx" "-c" ${nginxConf}
   '';
   providence-image = dockerTools.buildLayeredImage {
